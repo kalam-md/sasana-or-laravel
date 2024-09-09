@@ -32,7 +32,8 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.s
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile')->middleware('auth');
+Route::get('/profile/{username}', [ProfileController::class, 'index'])->name('profile')->middleware('auth');
+Route::post('/profile/{username}/update', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 
 Route::resource('/lapangan', LapanganController::class)->parameters([
     'lapangan' => 'lapangan:slug',

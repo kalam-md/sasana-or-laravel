@@ -100,11 +100,18 @@
                 <i class="align-middle" data-feather="settings"></i>
               </a>
 
-							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="{{ route('profile') }}" data-bs-toggle="dropdown">
-                <img src="{{ asset('admin/img/avatars/avatar.jpg') }}" class="avatar img-fluid rounded me-1" alt="Charles Hall" /> <span class="text-dark">{{ auth()->user()->fullname }}</span>
+							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="{{ route('profile', ['username' => Auth::user()->username]) }}" data-bs-toggle="dropdown">
+                <img 
+									src="{{ auth()->user()->photo ? asset('profile/' . auth()->user()->photo) : asset('admin/img/avatars/profile.webp') }}" 
+									class="avatar img-fluid rounded me-1" 
+									alt="{{ auth()->user()->fullname }}"
+									width="128" 
+									height="128"
+									style="object-fit: cover;">
+								<span class="text-dark">{{ auth()->user()->fullname }}</span>
               </a>
 							<div class="dropdown-menu dropdown-menu-end">
-								<a class="dropdown-item" href="{{ route('profile') }}"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
+								<a class="dropdown-item" href="{{ route('profile', ['username' => Auth::user()->username]) }}"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
 								<div class="dropdown-divider"></div>
 								<form action="{{ route('logout') }}" method="post">
 									@csrf
