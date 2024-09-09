@@ -9,8 +9,8 @@
     <div class="w-100">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Detail Pemesanan</h5>
-          <div class="col-md-12">
+          <h5 class="card-title">Detail Pesanan</h5>
+          <div id="lapangan-detail" class="col-md-12">
             
           </div>
         </div>
@@ -21,15 +21,16 @@
     <div class="w-100">
       <div class="card">
         <div class="card-body">
+          <h5 class="card-title">Buat Pesanan</h5>
           <form class="row g-3" method="post" action="" enctype="multipart/form-data">
             @csrf
             <div class="col-md-12">
               <label for="lapangan_id" class="form-label">Lapangan</label>
-              <select class="form-select" id="lapangan_id" name="lapangan_id" required>
-                  <option selected disabled value="">--Pilih Lapangan--</option>
-                  @foreach ($lapangans as $lapangan)
-                      <option value="{{ $lapangan->id }}">{{ $lapangan->nama_lapangan }}</option>
-                  @endforeach
+              <select class="form-select" id="lapangan_id" name="lapangan_id" onchange="getLapanganDetail(this.value)" required>
+                <option selected disabled value="">--Pilih Lapangan--</option>
+                @foreach ($lapangans as $lapangan)
+                  <option value="{{ $lapangan->id }}">{{ $lapangan->nama_lapangan }}</option>
+                @endforeach
               </select>
             </div>
             <div class="col-md-12">
@@ -62,5 +63,80 @@
     </div>
   </div>
 </div>
+
+<script>
+  function getLapanganDetail(lapanganId) {
+    if (lapanganId) {
+      fetch(`/pemesanan/lapangan/detail/${lapanganId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            let gambarHtml = '';
+
+            // Loop melalui gambar dan buat elemen <img> untuk setiap gambar
+            data.data.gambar_lapangan.forEach(gambar => {
+              gambarHtml += `
+                <img 
+                  src="/image/${gambar}" 
+                  alt="${data.data.nama_lapangan}" 
+                  class="img-fluid rounded mb-2" 
+                  style="object-fit: cover; width: 130px; height: 80px" 
+                />
+              `;
+            });
+
+            document.getElementById('lapangan-detail').innerHTML = `
+              <div class="d-flex gap-2 justify-content-between flex-wrap">
+                ${gambarHtml}
+              </div>
+              <div class="d-flex flex-column mt-2 gap-2">
+                <span>
+                  <div class="text-muted mb-2 d-flex justify-content-between">
+                    <span>Lapangan: </span><span>${data.data.nama_lapangan}</span>
+                  </div>
+                  <hr class="my-0" />
+                </span>
+                <span>
+                  <div class="text-muted mb-2 d-flex justify-content-between">
+                    <span>Jenis: </span><span>${data.data.jenis_lapangan}</span>
+                  </div>
+                  <hr class="my-0" />
+                </span>
+                <span>
+                  <div class="text-muted mb-2 d-flex justify-content-between">
+                    <span>Sub harga: </span><span>Rp. ${data.data.harga_lapangan}</span>
+                  </div>
+                  <hr class="my-0" />
+                </span>
+                <span>
+                  <div class="text-muted mb-2 d-flex justify-content-between">
+                    <span>Tanggal main: </span><span>22-08-2022</span>
+                  </div>
+                  <hr class="my-0" />
+                </span>
+                <span>
+                  <div class="text-muted mb-2 d-flex justify-content-between">
+                    <span>Jam main: </span><span>2 Jam</span>
+                  </div>
+                  <hr class="my-0" />
+                </span>
+                <span>
+                  <div class="text-muted mb-2 d-flex justify-content-between">
+                    <span>Total harga: </span><span>Rp. 180.000</span>
+                  </div>
+                  <hr class="my-0" />
+                </span>
+              </div>
+            `;
+          } else {
+            document.getElementById('lapangan-detail').innerHTML = `<p>${data.message}</p>`;
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+      document.getElementById('lapangan-detail').innerHTML = '';
+    }
+  }
+</script>
 
 @endsection

@@ -45,4 +45,4 @@ Route::post('/update-jadwal-status/{id}', [JadwalController::class, 'updateStatu
 
 Route::get('/pemesanan', [OrderController::class, 'index'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.index');
 Route::get('/pemesanan/create', [OrderController::class, 'create'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.create');
-Route::get('/get-jam-pemesanan', [OrderController::class, 'getJamPemesanan'])->name('getJamPemesanan');
+Route::get('/pemesanan/lapangan/detail/{id}', [OrderController::class, 'getDetail']);

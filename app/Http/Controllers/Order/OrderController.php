@@ -25,24 +25,28 @@ class OrderController extends Controller
         ]);
     }
 
-    public function getJamPemesanan(Request $request)
+    public function getDetail($id)
     {
-        $lapanganId = $request->lapangan_id;
-        $tanggalPemesanan = $request->tanggal_pemesanan;
+        $lapangan = Lapangan::find($id);
 
-        // Ambil semua jadwal yang sudah dipesan untuk lapangan dan tanggal yang dipilih
-        $bookedJadwals = Order::where('lapangan_id', $lapanganId)
-            ->where('tanggal_pemesanan', $tanggalPemesanan)
-            ->pluck('jadwal_id');
+        if ($lapangan) {
+            // Decode gambar dari JSON ke array
+            $gambar_lapangan = json_decode($lapangan->gambar_lapangan);
 
-        // Ambil semua jadwal yang aktif untuk lapangan yang dipilih, kecuali jadwal yang sudah dipesan
-        $jadwals = Jadwal::where('lapangan_id', $lapanganId)
-            ->whereNotIn('id', $bookedJadwals)
-            ->where('aktif', 1)
-            ->get();
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'nama_lapangan' => $lapangan->nama_lapangan,
+                    'jenis_lapangan' => $lapangan->jenis_lapangan,
+                    'harga_lapangan' => number_format($lapangan->harga_lapangan, 0, ',', '.'),
+                    'gambar_lapangan' => $gambar_lapangan,
+                ]
+            ]);
+        }
 
         return response()->json([
-            'jadwals' => $jadwals
+            'success' => false,
+            'message' => 'Lapangan tidak ditemukan.'
         ]);
     }
 }
