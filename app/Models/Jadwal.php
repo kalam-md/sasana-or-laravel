@@ -11,4 +11,10 @@ class Jadwal extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    // Relasi ke Order
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

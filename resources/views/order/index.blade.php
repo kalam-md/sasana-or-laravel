@@ -2,33 +2,35 @@
 
 @section('content')
 
-<h1 class="h3 mb-3"><strong>Lapangan</strong></h1>
+<h1 class="h3 mb-3"><strong>Pemesanan Lapangan</strong></h1>
 
 <div class="row">
   <div class="col-12 d-flex">
     <div class="w-100">
       <div class="row mb-3">
         <div class="col-4">
-          <a href="{{ route('lapangan.create') }}" type="button" class="btn btn-primary">
-            <i data-feather="plus" class="text-white align-middle" style="vertical-align: middle;width:22px;height:22px;"></i> Tambah Lapangan
+          <a href="{{ route('pemesanan.create') }}" type="button" class="btn btn-primary">
+            <i data-feather="plus" class="text-white align-middle" style="vertical-align: middle;width:22px;height:22px;"></i> Tambah Pemesanan
           </a>
         </div>
       </div>
       <div class="row">
         <div class="col-12 d-flex">
-          <div class="card flex-fill">
-            <table class="table table-hover my-0">
+          <div class="card flex-fill table-responsive">
+            <table class="table table-hover table-bordered my-0">
               <thead>
                 <tr>
-                  <th>No</th>
-                  <th>Nama Lapangan</th>
-                  <th class="d-none d-xl-table-cell">Jenis Lapangan</th>
-                  <th class="d-none d-xl-table-cell">Harga Lapangan</th>
+                  <th>Invoice</th>
+                  <th>Pelanggan</th>
+                  <th class="d-none d-xl-table-cell">Tanggal Transaksi</th>
+                  <th class="d-none d-xl-table-cell">Nama Lapangan</th>
+                  <th class="d-none d-xl-table-cell">Total</th>
+                  <th class="d-none d-xl-table-cell">Status</th>
                   <th class="d-none d-md-table-cell text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                @forelse ($lapangans as $lapangan)
+                {{-- @forelse ($lapangans as $lapangan)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $lapangan->nama_lapangan }}</td>
@@ -54,9 +56,9 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center">Data masih kosong</td>
+                    <td colspan="7" class="text-center">Data masih kosong</td>
                 </tr>
-                @endforelse
+                @endforelse --}}
               </tbody>
             </table>
           </div>

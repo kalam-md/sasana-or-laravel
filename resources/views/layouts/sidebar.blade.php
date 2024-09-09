@@ -23,16 +23,16 @@
           <i class="align-middle" data-feather="columns"></i> <span class="align-middle">Lapangan</span>
         </a>
       </li>
-      @endcan
 
       <li class="sidebar-item {{ Request::is('jadwal*') ? 'active' : '' }}">
         <a class="sidebar-link" href="{{ route('jadwal.index') }}">
           <i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Jadwal</span>
         </a>
       </li>
+      @endcan
 
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="#">
+      <li class="sidebar-item {{ Request::is('pemesanan*') ? 'active' : '' }}">
+        <a class="sidebar-link" href="{{ route('pemesanan.index') }}">
           <i class="align-middle" data-feather="shopping-bag"></i> <span class="align-middle">Pemesanan</span>
         </a>
       </li>

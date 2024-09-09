@@ -18,6 +18,7 @@
 
 	<link href="{{ asset('admin/css/app.css') }}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 	<style>
 		.preview-images-zone {
@@ -138,7 +139,6 @@
 	</div>
 
   {{-- JS --}}
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="{{ asset('admin/js/app.js') }}"></script>
 
 	{{-- Dashboard Chart --}}

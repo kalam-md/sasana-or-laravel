@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Jadwal\JadwalController;
 use App\Http\Controllers\Lapangan\LapanganController;
+use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,3 +42,7 @@ Route::resource('/lapangan', LapanganController::class)->parameters([
 
 Route::get('/jadwal', [JadwalController::class, 'index'])->middleware(['auth', 'role:admin'])->name('jadwal.index');
 Route::post('/update-jadwal-status/{id}', [JadwalController::class, 'updateStatus']);
+
+Route::get('/pemesanan', [OrderController::class, 'index'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.index');
+Route::get('/pemesanan/create', [OrderController::class, 'create'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.create');
+Route::get('/get-jam-pemesanan', [OrderController::class, 'getJamPemesanan'])->name('getJamPemesanan');

@@ -38,4 +38,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Relasi ke Order
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
