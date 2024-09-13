@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('jam');
             $table->boolean('aktif');
+            $table->string('status')->default('tersedia');
             $table->timestamps();
         });
     }

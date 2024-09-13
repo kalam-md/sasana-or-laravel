@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('invoices')->unique();
             $table->date('tanggal_pemesanan');
             $table->bigInteger('total_harga');
             $table->string('status')->default('pending');
@@ -22,8 +23,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('lapangan_id');
             $table->foreign('lapangan_id')->references('id')->on('lapangans')->onDelete('cascade');
-            $table->unsignedBigInteger('jadwal_id');
-            $table->foreign('jadwal_id')->references('id')->on('jadwals')->onDelete('cascade');
+            $table->json('jadwals');
             $table->timestamps();
         });
     }

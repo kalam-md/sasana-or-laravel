@@ -48,6 +48,9 @@
 		.past-date {
     		background-color: #f2f2f2;
 		}
+		.jadwal-item.selected {
+			background-color: #eeeeee;
+		}
 	</style>	
 </head>
 
