@@ -3,7 +3,15 @@
 @section('content')
 
 <h1 class="h3 mb-3"><strong>Tambah Pemesanan</strong></h1>
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="row">
   <div class="col-4 d-flex">
     <div class="w-100">
@@ -24,7 +32,7 @@
           <h5 class="card-title">Buat Pesanan</h5>
           <form class="row g-3" method="post" action="{{ route('pemesanan.store') }}" enctype="multipart/form-data">
             @csrf
-            <textarea name="jadwals" id="jadwals" style="display:none;"></textarea>
+            <textarea name="jadwals[]" id="jadwals" style="display:none;"></textarea> <!-- Hidden input untuk jadwals -->
             <div class="col-md-12">
               <label for="lapangan_id" class="form-label">Lapangan</label>
               <select class="form-select" id="lapangan_id" name="lapangan_id" onchange="getLapanganDetail(this.value)" required>
@@ -72,138 +80,92 @@
 let hargaLapangan = 0; // Variable untuk menyimpan harga lapangan
 let selectedJadwals = []; // Menyimpan jadwal yang dipilih
 
+// Ketika tanggal pemesanan berubah
 document.getElementById('tanggal_pemesanan').addEventListener('change', function() {
-  // Menampilkan atau menyembunyikan jam pemesanan berdasarkan tanggal pemesanan
   const tanggalPemesanan = this.value;
-
   if (tanggalPemesanan) {
     document.getElementById('jam-pemesanan-section').style.display = 'block';
-    resetJamPemesanan(); // Reset jam pemesanan
+    resetJamPemesanan();
   } else {
     document.getElementById('jam-pemesanan-section').style.display = 'none';
-    resetJamPemesanan(); // Reset jam pemesanan ketika tanggal kosong
+    resetJamPemesanan();
   }
 });
 
 function resetJamPemesanan() {
-  // Menghapus semua pilihan jam
-  selectedJadwals = []; // Reset array jadwal yang dipilih
-  
-  // Hapus class 'selected' dari semua elemen jadwal
+  selectedJadwals = [];
   const jadwalItems = document.querySelectorAll('.jadwal-item');
   jadwalItems.forEach(item => item.classList.remove('selected'));
-
-  // Hitung ulang total harga
   calculateTotal();
 }
 
+// Ambil detail lapangan
 function getLapanganDetail(lapanganId) {
   if (lapanganId) {
     fetch(`/pemesanan/lapangan/detail/${lapanganId}`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          // Menampilkan detail lapangan
           let gambarHtml = '';
-
           data.data.gambar_lapangan.forEach(gambar => {
             gambarHtml += `
-              <img 
-                src="/image/${gambar}" 
-                alt="${data.data.nama_lapangan}" 
-                class="img-fluid rounded mb-2" 
-                style="object-fit: cover; width: 130px; height: 80px" 
-              />
+              <img src="/image/${gambar}" alt="${data.data.nama_lapangan}" class="img-fluid rounded mb-2" style="object-fit: cover; width: 130px; height: 80px" />
             `;
           });
 
-          // Update detail lapangan di halaman
           document.getElementById('lapangan-detail').innerHTML = `
             <div class="d-flex gap-2 justify-content-between flex-wrap">
               ${gambarHtml}
             </div>
             <div class="d-flex flex-column mt-2 gap-2">
-              <span>
-                <div class="text-muted mb-2 d-flex justify-content-between">
-                  <span>Lapangan: </span><span>${data.data.nama_lapangan}</span>
-                </div>
-                <hr class="my-0" />
-              </span>
-              <span>
-                <div class="text-muted mb-2 d-flex justify-content-between">
-                  <span>Jenis: </span><span>${data.data.jenis_lapangan}</span>
-                </div>
-                <hr class="my-0" />
-              </span>
-              <span>
-                <div class="text-muted mb-2 d-flex justify-content-between">
-                  <span>Sub harga: </span><span>Rp. ${data.data.harga_lapangan}</span>
-                </div>
-                <hr class="my-0" />
-              </span>
-              <span id="total-harga-section" class="text-muted mb-2 d-flex justify-content-between">
-                <span>Total harga: </span><span>Rp. 0</span>
-              </span>
-              <hr class="my-0" />
+              <span><div class="text-muted mb-2 d-flex justify-content-between"><span>Lapangan: </span><span>${data.data.nama_lapangan}</span></div><hr class="my-0" /></span>
+              <span><div class="text-muted mb-2 d-flex justify-content-between"><span>Jenis: </span><span>${data.data.jenis_lapangan}</span></div><hr class="my-0" /></span>
+              <span><div class="text-muted mb-2 d-flex justify-content-between"><span>Sub harga: </span><span>Rp. ${data.data.harga_lapangan}</span></div><hr class="my-0" /></span>
+              <span id="total-harga-section" class="text-muted mb-2 d-flex justify-content-between"><span>Total harga: </span><span>Rp. 0</span></span><hr class="my-0" />
             </div>
           `;
-
-          // Menyimpan harga lapangan untuk perhitungan total
           hargaLapangan = data.data.harga_lapangan;
-
-          // Mengaktifkan input tanggal pemesanan dan menampilkan jam
           document.getElementById('tanggal_pemesanan').disabled = false;
-          document.getElementById('jam-pemesanan-section').style.display = 'none'; // Awalnya disembunyikan
         } else {
           document.getElementById('lapangan-detail').innerHTML = `<p>${data.message}</p>`;
           document.getElementById('tanggal_pemesanan').disabled = true;
-          document.getElementById('jam-pemesanan-section').style.display = 'none';
         }
       })
       .catch(error => console.error('Error:', error));
   } else {
     document.getElementById('lapangan-detail').innerHTML = '';
     document.getElementById('tanggal_pemesanan').disabled = true;
-    document.getElementById('jam-pemesanan-section').style.display = 'none';
   }
 }
 
-// Fungsi untuk toggle pemilihan jadwal
+// Toggle pemilihan jadwal
 function toggleSelectJadwal(element) {
-    const jadwalId = element.getAttribute('data-jadwal-id');
-    const isSelected = selectedJadwals.includes(jadwalId);
+  const jadwalId = element.getAttribute('data-jadwal-id');
+  const isSelected = selectedJadwals.includes(jadwalId);
 
-    if (isSelected) {
-        selectedJadwals = selectedJadwals.filter(id => id !== jadwalId);
-        element.classList.remove('selected');
-    } else {
-        selectedJadwals.push(jadwalId);
-        element.classList.add('selected');
-    }
+  if (isSelected) {
+    selectedJadwals = selectedJadwals.filter(id => id !== jadwalId);
+    element.classList.remove('selected');
+  } else {
+    selectedJadwals.push(jadwalId);
+    element.classList.add('selected');
+  }
 
-    // Update hidden field with selected schedules
-    document.getElementById('jadwals').value = JSON.stringify(selectedJadwals);
-
-    // Recalculate total price
-    calculateTotal();
+  document.getElementById('jadwals').value = selectedJadwals;
+  calculateTotal();
 }
 
-// Fungsi untuk menghitung total harga
+// Hitung total harga
 function calculateTotal() {
-  // Pastikan hargaLapangan adalah angka
-  const hargaLapanganStr = hargaLapangan.replace(/\./g, ''); // Menghapus titik dari string
-  const hargaLapanganNumber = parseInt(hargaLapanganStr, 10);
   const totalJam = selectedJadwals.length;
-  const totalHarga = totalJam * hargaLapanganNumber;
+  const totalHarga = totalJam * parseInt(hargaLapangan.replace(/\./g, ''), 10);
 
-  // Format total harga menjadi format ribuan (contoh: Rp. 210.000)
   const formattedTotalHarga = totalHarga.toLocaleString('id-ID', {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0,
   });
 
-  // Update tampilan total harga
   document.querySelector('#total-harga-section span:last-child').innerText = formattedTotalHarga;
 }
 </script>

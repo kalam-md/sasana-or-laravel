@@ -52,45 +52,9 @@ class OrderController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'lapangan_id' => 'required|exists:lapangans,id',
-            'tanggal_pemesanan' => 'required|date',
-            'jadwals' => 'required|array',
-            'jadwals.*' => 'exists:jadwals,id',
-        ]);
-        // dd($request->all());
-        // Fetch lapangan and check harga_lapangan
-        $lapangan = Lapangan::find($request->lapangan_id);
-
-        // Calculate the total price
-        $totalHarga = count($request->jadwals) * $lapangan->harga_lapangan;
-
-        // Create the order
-        Order::create([
-            'invoices' => Str::random(10), // Generate a unique invoice number
-            'tanggal_pemesanan' => $request->tanggal_pemesanan,
-            'total_harga' => $totalHarga,
-            'status' => 'pending', // Default status
-            'user_id' => auth()->id(),
-            'lapangan_id' => $request->lapangan_id,
-            'jadwals' => json_encode($request->jadwals), // Store selected schedules as JSON
-        ]);
-
-        return redirect()->route('pemesanan.index')->with('success', 'Pemesanan berhasil dibuat!');
-    }
-
     // public function store(Request $request)
     // {
-    //     // Debugging route hit
-    //     Log::info('Store method hit');
-
-    //     // Debugging request data
-    //     Log::info($request->all());
-
-    //     // Validate the request
+    //     // Validasi input
     //     $request->validate([
     //         'lapangan_id' => 'required|exists:lapangans,id',
     //         'tanggal_pemesanan' => 'required|date',
@@ -98,22 +62,57 @@ class OrderController extends Controller
     //         'jadwals.*' => 'exists:jadwals,id',
     //     ]);
 
-    //     // Calculate the total price
+    //     // Cek harga lapangan
     //     $lapangan = Lapangan::find($request->lapangan_id);
-    //     $totalHarga = count($request->jadwals) * $lapangan->harga_lapangan;
-    //     Log::info('Total Harga: ' . $totalHarga);
 
-    //     // Create the order
+    //     // Hitung total harga
+    //     $totalHarga = count($request->jadwals) * $lapangan->harga_lapangan;
+
+    //     // Buat pesanan
     //     Order::create([
-    //         'invoices' => Str::random(10), // Generate a unique invoice number
+    //         'invoices' => Str::random(10), // Generate invoice unik
     //         'tanggal_pemesanan' => $request->tanggal_pemesanan,
     //         'total_harga' => $totalHarga,
-    //         'status' => 'pending', // Default status
+    //         'status' => 'pending',
     //         'user_id' => auth()->id(),
     //         'lapangan_id' => $request->lapangan_id,
-    //         'jadwals' => json_encode($request->jadwals), // Store selected schedules as JSON
+    //         'jadwals' => json_encode($request->jadwals),
     //     ]);
 
-    //     return redirect()->route('pemesanan.index')->with('success', 'Pemesanan berhasil dibuat!');
+    //     return redirect()->route('pemesanan.index')->with('success', 'Pesanan berhasil dibuat.');
     // }
+
+
+    public function store(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'lapangan_id' => 'required|exists:lapangans,id',
+            'tanggal_pemesanan' => 'required|date',
+            'jadwals' => 'required|array',
+            'jadwals.*' => 'exists:jadwals,id',
+        ]);
+
+        // Ambil data lapangan
+        $lapangan = Lapangan::find($request->lapangan_id);
+        $hargaLapangan = $lapangan->harga_lapangan;
+
+        // Hitung total harga berdasarkan jumlah jadwal yang dipilih
+        $jumlahJadwals = explode(',', $request->jadwals[0]);
+        $jumlahJadwalsArray = count($jumlahJadwals);
+        $totalHarga = $jumlahJadwalsArray * $hargaLapangan;
+
+        // Buat pesanan
+        Order::create([
+            'invoices' => Str::random(10),
+            'tanggal_pemesanan' => $request->tanggal_pemesanan,
+            'total_harga' => $totalHarga,
+            'status' => 'pending',
+            'user_id' => auth()->id(),
+            'lapangan_id' => $request->lapangan_id,
+            'jadwals' => json_encode($request->jadwals), // Simpan sebagai JSON di database jika perlu
+        ]);
+
+        return redirect()->route('pemesanan.index')->with('success', 'Pesanan berhasil dibuat.');
+    }
 }
