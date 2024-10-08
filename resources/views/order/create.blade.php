@@ -79,18 +79,67 @@
 <script>
 let hargaLapangan = 0; // Variable untuk menyimpan harga lapangan
 let selectedJadwals = []; // Menyimpan jadwal yang dipilih
+let bookedJadwals = [];
+
+document.getElementById('lapangan_id').addEventListener('change', function() {
+  const lapanganId = this.value;
+  if (lapanganId) {
+    getLapanganDetail(lapanganId);
+    document.getElementById('tanggal_pemesanan').disabled = false;
+    checkBookedJadwals();
+  } else {
+    document.getElementById('lapangan-detail').innerHTML = '';
+    document.getElementById('tanggal_pemesanan').disabled = true;
+    document.getElementById('jam-pemesanan-section').style.display = 'none';
+  }
+});
 
 // Ketika tanggal pemesanan berubah
 document.getElementById('tanggal_pemesanan').addEventListener('change', function() {
   const tanggalPemesanan = this.value;
   if (tanggalPemesanan) {
     document.getElementById('jam-pemesanan-section').style.display = 'block';
-    resetJamPemesanan();
+    checkBookedJadwals();
   } else {
     document.getElementById('jam-pemesanan-section').style.display = 'none';
-    resetJamPemesanan();
   }
+  resetJamPemesanan();
 });
+
+function checkBookedJadwals() {
+  const lapanganId = document.getElementById('lapangan_id').value;
+  const tanggalPemesanan = document.getElementById('tanggal_pemesanan').value;
+  if (lapanganId && tanggalPemesanan) {
+    fetch(`/pemesanan/booked-jadwals?lapangan_id=${lapanganId}&tanggal_pemesanan=${tanggalPemesanan}`)
+      .then(response => response.json())
+      .then(data => {
+        bookedJadwals = data;
+        updateJadwalAvailability();
+      })
+      .catch(error => console.error('Error:', error));
+  }
+}
+
+function updateJadwalAvailability() {
+  const jadwalItems = document.querySelectorAll('.jadwal-item');
+  jadwalItems.forEach(item => {
+    const jadwalId = item.getAttribute('data-jadwal-id');
+    const bookedIds = bookedJadwals.flatMap(item => item.split(',').map(id => id.trim()));
+    if (bookedIds.includes(jadwalId)) {
+      item.classList.add('booked');
+      item.onclick = null;
+      item.querySelector('small span').textContent = 'Tidak Tersedia';
+      item.querySelector('small span').classList.remove('text-bg-primary');
+      item.querySelector('small span').classList.add('text-bg-secondary');
+    } else {
+      item.classList.remove('booked');
+      item.onclick = function() { toggleSelectJadwal(this); };
+      item.querySelector('small span').textContent = 'Tersedia';
+      item.querySelector('small span').classList.remove('text-bg-secondary');
+      item.querySelector('small span').classList.add('text-bg-primary');
+    }
+  });
+}
 
 function resetJamPemesanan() {
   selectedJadwals = [];
@@ -140,6 +189,8 @@ function getLapanganDetail(lapanganId) {
 
 // Toggle pemilihan jadwal
 function toggleSelectJadwal(element) {
+  if (element.classList.contains('booked')) return;
+
   const jadwalId = element.getAttribute('data-jadwal-id');
   const isSelected = selectedJadwals.includes(jadwalId);
 

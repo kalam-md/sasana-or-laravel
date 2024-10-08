@@ -15,16 +15,39 @@ class OrderController extends Controller
     public function index()
     {
         return view('order.index', [
-            'lapangans' => Lapangan::all()
+            'orders' => Order::all()
         ]);
     }
 
     public function create()
     {
+        // Ambil semua jadwals dan lapangan
+        $jadwals = Jadwal::all();
+        $lapangans = Lapangan::all();
+
         return view('order.create', [
-            'jadwals' => Jadwal::all(),
-            'lapangans' => Lapangan::all()
+            'jadwals' => $jadwals,
+            'lapangans' => $lapangans,
         ]);
+    }
+
+    public function getBookedJadwals(Request $request)
+    {
+        $lapanganId = $request->input('lapangan_id');
+        $tanggal = $request->input('tanggal_pemesanan');
+
+        $bookedJadwals = Order::where('lapangan_id', $lapanganId)
+            ->where('tanggal_pemesanan', $tanggal)
+            ->pluck('jadwals')
+            ->flatten()
+            ->map(function ($item) {
+                return json_decode($item);
+            })
+            ->flatten()
+            ->unique()
+            ->values();
+
+        return response()->json($bookedJadwals);
     }
 
     public function getDetail($id)
@@ -51,37 +74,6 @@ class OrderController extends Controller
             'message' => 'Lapangan tidak ditemukan.'
         ]);
     }
-
-    // public function store(Request $request)
-    // {
-    //     // Validasi input
-    //     $request->validate([
-    //         'lapangan_id' => 'required|exists:lapangans,id',
-    //         'tanggal_pemesanan' => 'required|date',
-    //         'jadwals' => 'required|array',
-    //         'jadwals.*' => 'exists:jadwals,id',
-    //     ]);
-
-    //     // Cek harga lapangan
-    //     $lapangan = Lapangan::find($request->lapangan_id);
-
-    //     // Hitung total harga
-    //     $totalHarga = count($request->jadwals) * $lapangan->harga_lapangan;
-
-    //     // Buat pesanan
-    //     Order::create([
-    //         'invoices' => Str::random(10), // Generate invoice unik
-    //         'tanggal_pemesanan' => $request->tanggal_pemesanan,
-    //         'total_harga' => $totalHarga,
-    //         'status' => 'pending',
-    //         'user_id' => auth()->id(),
-    //         'lapangan_id' => $request->lapangan_id,
-    //         'jadwals' => json_encode($request->jadwals),
-    //     ]);
-
-    //     return redirect()->route('pemesanan.index')->with('success', 'Pesanan berhasil dibuat.');
-    // }
-
 
     public function store(Request $request)
     {
@@ -110,7 +102,7 @@ class OrderController extends Controller
             'status' => 'pending',
             'user_id' => auth()->id(),
             'lapangan_id' => $request->lapangan_id,
-            'jadwals' => json_encode($request->jadwals), // Simpan sebagai JSON di database jika perlu
+            'jadwals' => json_encode($request->jadwals),
         ]);
 
         return redirect()->route('pemesanan.index')->with('success', 'Pesanan berhasil dibuat.');

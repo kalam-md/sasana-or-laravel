@@ -51,6 +51,10 @@
 		.jadwal-item.selected {
 			background-color: #eeeeee;
 		}
+		.jadwal-item.booked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 	</style>	
 </head>
 

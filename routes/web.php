@@ -47,3 +47,4 @@ Route::get('/pemesanan', [OrderController::class, 'index'])->middleware(['auth',
 Route::get('/pemesanan/create', [OrderController::class, 'create'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.create');
 Route::get('/pemesanan/lapangan/detail/{id}', [OrderController::class, 'getDetail']);
 Route::post('/pemesanan', [OrderController::class, 'store'])->name('pemesanan.store');
+Route::get('/pemesanan/booked-jadwals', [OrderController::class, 'getBookedJadwals']);
