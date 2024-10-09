@@ -34,15 +34,23 @@
                 @forelse ($orders as $order)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>SCP{{ $order->invoices }}AD</td>
+                    <td>
+                      <a href="#">SCP{{ $order->invoices }}AD</a>
+                    </td>
                     <td class="d-none d-xl-table-cell">{{ $order->user->fullname }}</td>
                     <td class="d-none d-xl-table-cell">
-                      {{ \Carbon\Carbon::parse($order->tanggal_pemesanan)->locale('id')->timezone('Asia/Jakarta')->isoFormat('dddd, D MMMM Y, [Jam] HH:mm [WIB]') }}
+                      {{ \Carbon\Carbon::parse($order->tanggal_pemesanan)->locale('id')->timezone('Asia/Jakarta')->isoFormat('dddd, D MMMM Y') }}
                     </td>
                     <td class="d-none d-xl-table-cell">{{ $order->lapangan->nama_lapangan }}</td>
                     <td class="d-none d-xl-table-cell">Rp. {{ number_format($order->total_harga, 0, ',', '.') }}</td>
                     <td class="d-none d-xl-table-cell">
-                      <span class="badge text-bg-warning">{{ $order->status }}</span>
+                      @if ($order->status == 'pending')
+                        <span class="badge text-bg-warning">{{ $order->status }}</span>
+                      @elseif ($order->status == 'ditolak')
+                        <span class="badge text-bg-danger">{{ $order->status }}</span>
+                      @elseif ($order->status == 'berhasil')
+                        <span class="badge text-bg-success">{{ $order->status }}</span>
+                      @endif
                     </td>
                     <td class="d-none d-md-table-cell text-center">
                         <div class="d-flex justify-content-center align-items-center gap-1">
