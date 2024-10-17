@@ -34,6 +34,11 @@
             @csrf
             <textarea name="jadwals[]" id="jadwals" style="display:none;"></textarea> <!-- Hidden input untuk jadwals -->
             <div class="col-md-12">
+              <label for="nama_pemesan" class="form-label">Nama Pemesan</label>
+              <input type="text" class="form-control" id="nama_pemesan" name="nama_pemesan" placeholder="Masukan nama pemesan" required>
+              <small class="text-danger">*Nama perorang/tim/organisasi</small>
+            </div>
+            <div class="col-md-12">
               <label for="lapangan_id" class="form-label">Lapangan</label>
               <select class="form-select" id="lapangan_id" name="lapangan_id" onchange="getLapanganDetail(this.value)" required>
                 <option selected disabled value="">--Pilih Lapangan--</option>

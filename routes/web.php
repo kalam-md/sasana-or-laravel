@@ -48,3 +48,7 @@ Route::get('/pemesanan/create', [OrderController::class, 'create'])->middleware(
 Route::get('/pemesanan/lapangan/detail/{id}', [OrderController::class, 'getDetail']);
 Route::post('/pemesanan', [OrderController::class, 'store'])->name('pemesanan.store');
 Route::get('/pemesanan/booked-jadwals', [OrderController::class, 'getBookedJadwals']);
+Route::get('/pemesanan/{invoices}', [OrderController::class, 'pemesananDetail'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.detail');
+Route::post('/pemesanan/{invoices}/upload-bukti', [OrderController::class, 'uploadBuktiBayar'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.uploadBukti');
+Route::post('/pemesanan/verifikasi/{invoices}', [OrderController::class, 'verifikasiPembayaran'])->name('pemesanan.verifikasi');
+Route::get('/pemesanan/{invoices}/cetak', [OrderController::class, 'pemesananCetak'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.cetak');

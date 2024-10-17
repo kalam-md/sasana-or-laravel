@@ -14,17 +14,19 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('invoices')->unique();
+            $table->string('nama_pemesan');
+            $table->string('keterangan')->nullable();
             $table->date('tanggal_pemesanan');
             $table->bigInteger('total_harga');
             $table->string('status')->default('pending');
             $table->string('bukti_transfer')->nullable();
             $table->date('tanggal_selesai')->nullable();
-            $table->string('note')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('lapangan_id');
             $table->foreign('lapangan_id')->references('id')->on('lapangans')->onDelete('cascade');
-            $table->json('jadwals');
+            $table->json('jadwals')->nullable();
+            $table->json('jadwals_tolak')->nullable();
             $table->timestamps();
         });
     }

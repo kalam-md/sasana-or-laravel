@@ -22,7 +22,7 @@
                 <tr>
                   <th>No</th>
                   <th>Invoices</th>
-                  <th>Pelanggan</th>
+                  <th>Pemesan</th>
                   <th class="d-none d-xl-table-cell">Tanggal Transaksi</th>
                   <th class="d-none d-xl-table-cell">Nama Lapangan</th>
                   <th class="d-none d-xl-table-cell">Total</th>
@@ -35,9 +35,9 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>
-                      <a href="#">SCP{{ $order->invoices }}AD</a>
+                      <a href="{{ route('pemesanan.cetak', $order->invoices) }}">{{ $order->invoices }}</a>
                     </td>
-                    <td class="d-none d-xl-table-cell">{{ $order->user->fullname }}</td>
+                    <td class="d-none d-xl-table-cell">{{ $order->nama_pemesan }}</td>
                     <td class="d-none d-xl-table-cell">
                       {{ \Carbon\Carbon::parse($order->tanggal_pemesanan)->locale('id')->timezone('Asia/Jakarta')->isoFormat('dddd, D MMMM Y') }}
                     </td>
@@ -48,13 +48,17 @@
                         <span class="badge text-bg-warning">{{ $order->status }}</span>
                       @elseif ($order->status == 'ditolak')
                         <span class="badge text-bg-danger">{{ $order->status }}</span>
-                      @elseif ($order->status == 'berhasil')
+                      @elseif ($order->status == 'kadaluarsa')
+                        <span class="badge text-bg-danger">{{ $order->status }}</span>
+                      @elseif ($order->status == 'verifikasi')
+                        <span class="badge text-bg-info">{{ $order->status }}</span>
+                      @elseif ($order->status == 'sukses')
                         <span class="badge text-bg-success">{{ $order->status }}</span>
                       @endif
                     </td>
                     <td class="d-none d-md-table-cell text-center">
                         <div class="d-flex justify-content-center align-items-center gap-1">
-                            <a href="">
+                            <a href="{{ route('pemesanan.detail', $order->invoices) }}">
                                 <i data-feather="eye" class="text-primary"></i>
                             </a>
                         </div>
