@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Jadwal\JadwalController;
 use App\Http\Controllers\Lapangan\LapanganController;
 use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\Pelanggan\PelangganController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 Route::get('/profile/{username}', [ProfileController::class, 'index'])->name('profile')->middleware('auth');
 Route::post('/profile/{username}/update', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
+
+Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan')->middleware('auth');
 
 Route::resource('/lapangan', LapanganController::class)->parameters([
     'lapangan' => 'lapangan:slug',

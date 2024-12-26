@@ -17,8 +17,18 @@ class OrderController extends Controller
 {
     public function index()
     {
+        $user = auth()->user(); // Mendapatkan pengguna yang sedang login
+
+        if ($user->role === 'admin') {
+            // Admin dapat melihat semua pesanan
+            $orders = \App\Models\Order::all();
+        } else {
+            // Pengguna hanya dapat melihat pesanan mereka sendiri
+            $orders = \App\Models\Order::where('user_id', $user->id)->get();
+        }
+
         return view('order.index', [
-            'orders' => Order::all()
+            'orders' => $orders
         ]);
     }
 
@@ -115,10 +125,16 @@ class OrderController extends Controller
 
     public function pemesananDetail($invoices)
     {
-        // Cari detail pemesanan berdasarkan invoices
-        $order = Order::where('invoices', $invoices)
-            ->where('user_id', Auth::id()) // Pastikan hanya order milik user yang login
-            ->firstOrFail();
+        $user = Auth::user(); // Mendapatkan pengguna yang sedang login
+
+        $orderQuery = Order::where('invoices', $invoices);
+
+        if ($user->role !== 'admin') {
+            // Jika bukan admin, hanya pesanan milik pengguna yang login yang dapat diakses
+            $orderQuery->where('user_id', $user->id);
+        }
+
+        $order = $orderQuery->firstOrFail();
 
         // Cek jika pesanan ditemukan
         if (!$order) {
@@ -150,10 +166,16 @@ class OrderController extends Controller
 
     public function pemesananCetak($invoices)
     {
-        // Cari detail pemesanan berdasarkan invoices
-        $order = Order::where('invoices', $invoices)
-            ->where('user_id', Auth::id()) // Pastikan hanya order milik user yang login
-            ->firstOrFail();
+        $user = Auth::user(); // Mendapatkan pengguna yang sedang login
+
+        $orderQuery = Order::where('invoices', $invoices);
+
+        if ($user->role !== 'admin') {
+            // Jika bukan admin, hanya pesanan milik pengguna yang login yang dapat diakses
+            $orderQuery->where('user_id', $user->id);
+        }
+
+        $order = $orderQuery->firstOrFail();
 
         // Cek jika pesanan ditemukan
         if (!$order) {
@@ -187,7 +209,7 @@ class OrderController extends Controller
     {
         // Validasi input file
         $request->validate([
-            'bukti_transfer' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi tipe gambar
+            'bukti_transfer' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', // Validasi tipe gambar
         ]);
 
         // Cari order berdasarkan invoices

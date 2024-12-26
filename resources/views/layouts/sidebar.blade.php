@@ -12,8 +12,8 @@
       </li>
 
       @can('isAdmin')
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="#">
+      <li class="sidebar-item {{ Request::is('pelanggan*') ? 'active' : '' }}">
+        <a class="sidebar-link" href="{{ route('pelanggan') }}">
           <i class="align-middle" data-feather="users"></i> <span class="align-middle">Pelanggan</span>
         </a>
       </li>
