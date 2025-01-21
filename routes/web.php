@@ -8,6 +8,8 @@ use App\Http\Controllers\Lapangan\LapanganController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Pelanggan\PelangganController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Models\Jadwal;
+use App\Models\Lapangan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,7 +24,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', [
+        'lapangans' => Lapangan::all()
+    ]);
 });
 
 
