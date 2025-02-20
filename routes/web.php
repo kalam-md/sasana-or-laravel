@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Jadwal\JadwalController;
 use App\Http\Controllers\Lapangan\LapanganController;
+use App\Http\Controllers\Laporan\LaporanController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Pelanggan\PelangganController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -59,3 +60,9 @@ Route::get('/pemesanan/{invoices}', [OrderController::class, 'pemesananDetail'])
 Route::post('/pemesanan/{invoices}/upload-bukti', [OrderController::class, 'uploadBuktiBayar'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.uploadBukti');
 Route::post('/pemesanan/verifikasi/{invoices}', [OrderController::class, 'verifikasiPembayaran'])->name('pemesanan.verifikasi');
 Route::get('/pemesanan/{invoices}/cetak', [OrderController::class, 'pemesananCetak'])->middleware(['auth', 'role:admin,user'])->name('pemesanan.cetak');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::post('/laporan/pdf', [LaporanController::class, 'exportPDF'])->name('laporan.exportPDF');
+    Route::post('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.exportExcel');
+});

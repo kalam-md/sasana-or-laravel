@@ -37,11 +37,13 @@
         </a>
       </li>
 
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="#">
+      @can('isAdmin')
+      <li class="sidebar-item {{ Request::is('laporan*') ? 'active' : '' }}">
+        <a class="sidebar-link" href="{{ route('laporan.index') }}">
           <i class="align-middle" data-feather="tag"></i> <span class="align-middle">Laporan</span>
         </a>
       </li>
+      @endcan
     </ul>
   </div>
 </nav>
